@@ -17,7 +17,7 @@ app.all("/:service/{*any}", async (req, res) => {
 
     const { host, port } = services[serviceName];
     const path = req.params[0] || "";
-    const url = `http://${host}:${port}/${path}`;
+    const url = `${config.protocol}://${host}:${port}/${path}`;
 
     const response = await axios({
       method: req.method,
