@@ -19,14 +19,15 @@ app.all("/:service/{*any}", async (req, res) => {
     const path = req.params[0] || "";
     const url = `${config.protocol}://${host}:${port}/${path}`;
 
+    var headers = req.headers
+    headers['Cache-Control'] = "no-cache"
     const response = await axios({
       method: req.method,
       url,
       data: req.body,
       params: req.query,
-      headers: req.headers,
+      headers
     });
-
     res.status(response.status).send(response.data);
   } catch (err) {
     console.error(err.message);
