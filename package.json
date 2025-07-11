@@ -1,6 +1,6 @@
 {
   "name": "@igea/oac_gateway",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Gateway service for the OAC project",
   "main": "src/index.js",
   "scripts": {
