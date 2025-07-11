@@ -33,6 +33,9 @@ app.all("/:service/{*any}", async (req, res) => {
       params: req.query,
       headers
     });
+    for (const key in response.headers) {
+      res.setHeader(key, response.headers[key]);
+    }
     res.status(response.status).send(response.data);
   } catch (err) {
     console.error(err.message);
