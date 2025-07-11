@@ -7,18 +7,23 @@ app.use(express.json());
 
 app.all("/:service/{*any}", async (req, res) => {
   try {
-    // Get services list
-    const { data: services } = await axios.get(config.url_register);
+    
     const serviceName = req.params.service;
 
-    if (!services[serviceName]) {
+    // Get services list
+    const { data: services } = await axios.get(config.url_register);
+    
+    const matchingInstances = services.filter(item => item.name === serviceName);
+
+    if (matchingInstances.length == 0) {
       return res.status(404).json({ error: "Service not found" });
     }
 
-    const { host, port } = services[serviceName];
-    const path = req.params[0] || "";
-    const url = `${config.protocol}://${host}:${port}/${path}`;
+    const randomInstance = matchingInstances[Math.floor(Math.random() * matchingInstances.length)];
 
+    const { protocol, host, port } = randomInstance;
+    const path = req.params.any ? req.params.any.join("/") : ""
+    const url = `${protocol}://${host}:${port}/${path}`;
     var headers = req.headers
     headers['Cache-Control'] = "no-cache"
     const response = await axios({
