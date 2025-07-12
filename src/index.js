@@ -23,7 +23,7 @@ app.all("/:service/{*any}", async (req, res) => {
 
     const { protocol, host, port } = randomInstance;
     const path = req.params.any ? req.params.any.join("/") : ""
-    const url = `${protocol}://${host}:${port}/${path}`;
+    const url = `${protocol}://${host}:${port}/${serviceName}/${path}`;
     var headers = req.headers
     headers['Cache-Control'] = "no-cache"
     const response = await axios({
