@@ -42,8 +42,7 @@ app.all("/:service/{*any}", async (req, res) => {
     }
     res.status(response.status).send(response.data);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ error: "Gateway error" });
+    res.status(500).json({ error: `Gateway error: ${err}` });
   }
 });
 
