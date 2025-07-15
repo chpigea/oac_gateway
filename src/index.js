@@ -2,7 +2,8 @@ const config = require('./config.js')
 const express = require("express");
 const axios = require("axios");
 const app = express();
-app.use(express.json());
+app.use(express.json());          // parses application/json
+app.use(express.urlencoded({ extended: true })); // parses application/x-www-form-urlencoded
 
 
 app.all("/:service/{*any}", async (req, res) => {
@@ -25,7 +26,10 @@ app.all("/:service/{*any}", async (req, res) => {
     const path = req.params.any ? req.params.any.join("/") : ""
     const url = `${protocol}://${host}:${port}/${serviceName}/${path}`;
     var headers = req.headers
+    delete headers['host'];
+    delete headers['content-length'];
     headers['Cache-Control'] = "no-cache"
+
     const response = await axios({
       method: req.method,
       url,
