@@ -6,7 +6,7 @@ app.use(express.json());          // parses application/json
 app.use(express.urlencoded({ extended: true })); // parses application/x-www-form-urlencoded
 
 
-app.all("/:service/{*any}", async (req, res) => {
+app.all("/:service/{*any}", async (req, res, next) => {
   try {
     
     const serviceName = req.params.service;
@@ -35,14 +35,24 @@ app.all("/:service/{*any}", async (req, res) => {
       url,
       data: req.body,
       params: req.query,
-      headers
+      headers,
+      maxRedirects: 0
     });
     for (const key in response.headers) {
       res.setHeader(key, response.headers[key]);
     }
     res.status(response.status).send(response.data);
   } catch (err) {
-    res.status(500).json({ error: `Gateway error: ${err}` });
+    if (err.response && err.response.status >= 300 && err.response.status < 400) {
+      // This is a redirect: forward it
+      return res
+        .status(err.response.status)
+        .set('Location', err.response.headers.location)
+        .send();
+    }
+    // Other errors
+    next(err);
+    //res.status(500).json({ error: `Gateway error: ${err}` });
   }
 });
 
