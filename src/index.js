@@ -30,8 +30,6 @@ app.all("/:service/{*any}", async (req, res, next) => {
     delete headers['content-length'];
     headers['Cache-Control'] = "no-cache"
 
-    console.log("Path: " + path)
-
     let options = {
       method: req.method,
       url,
