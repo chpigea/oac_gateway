@@ -30,18 +30,23 @@ app.all("/:service/{*any}", async (req, res, next) => {
     delete headers['content-length'];
     headers['Cache-Control'] = "no-cache"
 
-    const response = await axios({
+    console.log("Path: " + path)
+
+    let options = {
       method: req.method,
       url,
       data: req.body,
       params: req.query,
       headers,
-      maxRedirects: 0
-    });
+      maxRedirects: 0,
+      responseType: "stream"
+    }
+    const response = await axios(options);
     for (const key in response.headers) {
       res.setHeader(key, response.headers[key]);
     }
-    res.status(response.status).send(response.data);
+    res.status(response.status);
+    response.data.pipe(res);
   } catch (err) {
     if (err.response && err.response.status >= 300 && err.response.status < 400) {
       // This is a redirect: forward it
