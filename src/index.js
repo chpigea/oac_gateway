@@ -2,9 +2,27 @@ const config = require('./config.js')
 const express = require("express");
 const axios = require("axios");
 const app = express();
-app.use(express.json());          // parses application/json
-app.use(express.urlencoded({ extended: true })); // parses application/x-www-form-urlencoded
 
+function jsonMiddlewareWrapper() {
+  const jsonParser = express.json(); // il parser originale
+  return (req, res, next) => {
+    const contentType = req.headers['content-type'] || '';
+    if (contentType.startsWith('application/json')) {
+      jsonParser(req, res, (err) => {
+        if (err) {
+          console.warn("JSON parsing failed, skipping:", err.message);
+          return next();
+        }
+        next();
+      });
+    } else {
+      next();
+    }
+  };
+}
+
+app.use(jsonMiddlewareWrapper());                 // parses application/json
+app.use(express.urlencoded({ extended: true }));  // parses application/x-www-form-urlencoded
 
 app.all("/:service/{*any}", async (req, res, next) => {
   try {
@@ -30,10 +48,16 @@ app.all("/:service/{*any}", async (req, res, next) => {
     delete headers['content-length'];
     headers['Cache-Control'] = "no-cache"
 
+    const contentType = req.headers['content-type'] || '';
+    let data = null
+    if (contentType.startsWith('multipart/form-data')){
+      data = req
+    }else{
+      data = req.body
+    }
     let options = {
       method: req.method,
-      url,
-      data: req.body,
+      url, data,
       params: req.query,
       headers,
       maxRedirects: 0,
