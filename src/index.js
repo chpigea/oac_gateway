@@ -25,7 +25,6 @@ function jsonMiddlewareWrapper() {
 app.use(jsonMiddlewareWrapper());                 // parses application/json
 app.use(express.urlencoded({ extended: true }));  // parses application/x-www-form-urlencoded
 
-// codeql [js/request-forgery]: false positive: 'service' is validated against a register
 app.all("/:service/{*any}", async (req, res, next) => {
   try {
     const serviceName = req.params.service
@@ -64,6 +63,7 @@ app.all("/:service/{*any}", async (req, res, next) => {
       maxRedirects: 0,
       responseType: "stream"
     }
+    // codeql [js/request-forgery]: false positive: 'service' is validated against a register
     const response = await axios(options);
     for (const key in response.headers) {
       res.setHeader(key, response.headers[key]);
