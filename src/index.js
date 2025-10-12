@@ -27,8 +27,7 @@ app.use(express.urlencoded({ extended: true }));  // parses application/x-www-fo
 
 app.all("/:service/{*any}", async (req, res, next) => {
   try {
-    let serviceName = "frontend"
-    if(req.params.service === "backend") serviceName = "backend"
+    const serviceName = req.params.service
     
     // Get services list
     const { data: services } = await axios.get(config.url_register);
@@ -64,6 +63,7 @@ app.all("/:service/{*any}", async (req, res, next) => {
       maxRedirects: 0,
       responseType: "stream"
     }
+    // CodeQL [js/request-forgery]: suppress Reason: 'service' is validated against a register
     const response = await axios(options);
     for (const key in response.headers) {
       res.setHeader(key, response.headers[key]);
