@@ -3,6 +3,7 @@ const config = require('./config.js')
 const express = require("express");
 const axios = require("axios");
 const app = express();
+const supportedServices = ["frontend", "backend"]
 
 function jsonMiddlewareWrapper() {
   const jsonParser = express.json(); // il parser originale
@@ -35,7 +36,8 @@ app.all("/:service/{*any}", async (req, res, next) => {
     
     const matchingInstances = services.filter(item => item.name === serviceName);
 
-    if (matchingInstances.length == 0) {
+    if (matchingInstances.length == 0 || 
+      !supportedServices.includes(serviceName)) {
       return res.status(404).json({ error: "Service not found" });
     }
 
