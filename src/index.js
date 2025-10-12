@@ -25,7 +25,7 @@ function jsonMiddlewareWrapper() {
 app.use(jsonMiddlewareWrapper());                 // parses application/json
 app.use(express.urlencoded({ extended: true }));  // parses application/x-www-form-urlencoded
 
-// codeql [js/request-forgery]: suppress Reason: 'service' is validated against a register
+// codeql [js/request-forgery]: false positive: 'service' is validated against a register
 app.all("/:service/{*any}", async (req, res, next) => {
   try {
     const serviceName = req.params.service
